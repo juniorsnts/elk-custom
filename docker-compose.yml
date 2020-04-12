@@ -7,31 +7,32 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    networks: 
+      - elk
   kibana:
     image: kibana:7.5.0
     ports:
       - 5601:5601
     depends_on:
       - elasticsearch
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks: 
+      - elk
   logstash:
     image: logstash:7.5.0
     command: logstash -f /etc/logstash/conf.d/logstash.conf
     ports:
       - 5044:5044
+    deploy:
+      mode: replicated
+      replicas: 1
     volumes:
-      - ./logstash:/etc/logstash/conf.d
-      # - ./logstash/patterns:/opt/logstash/patterns
+      - "./logstash/logstash.conf:/etc/logstash/conf.d/logstash.conf"
     depends_on:
       - elasticsearch
-  # filebeat:
-  #   image: store/elastic/filebeat:7.5.0
-  #   volumes:
-  #     - ./filebeat/filebeat.yml:/filebeat.yml
-  #     # - /var/lib/docker/containers:/usr/share/dockerlogs/data:ro
-  #     # - /var/run/docker.sock:/var/run/docker.sock
-  #   depends_on:
-  #     - logstash
-  #   links:
-  #     - logstash
-  #     - kibana
-  #     - elasticsearch
+    networks: 
+      - elk
+networks: 
+  elk:    
