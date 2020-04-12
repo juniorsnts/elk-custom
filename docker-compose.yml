@@ -10,6 +10,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy: on-failure
       placement:
         constraints: [node.role == manager]
     networks: 
@@ -23,22 +24,24 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy: on-failure
       placement:
         constraints: [node.role == worker]
     networks: 
       - elk
   logstash:
-    image: logstash:7.5.0
-    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    image: docker.elastic.co/logstash/logstash:7.5.0
+    # command: logstash -f /etc/logstash/conf.d/logstash.conf
+    environment: 
+      - XPACK.MONITORING.ELASTICSEARCH.HOSTS=http://elasticsearch:9200
     ports:
       - 5044:5044
     deploy:
       mode: replicated
+      restart_policy: on-failure
       replicas: 1
       placement:
-        constraints: [node.role == worker]
-    volumes:
-      - "./logstash/logstash.conf:/etc/logstash/conf.d/logstash.conf"
+        constraints: [node.role == worker]        
     depends_on:
       - elasticsearch
     networks: 
