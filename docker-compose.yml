@@ -34,6 +34,7 @@ services:
     # command: logstash -f /etc/logstash/conf.d/logstash.conf
     environment: 
       - XPACK.MONITORING.ELASTICSEARCH.HOSTS=http://elasticsearch:9200
+      - ELASTIC_PASSWORD=elasticqwe192x
     ports:
       - 5044:5044
     deploy:
